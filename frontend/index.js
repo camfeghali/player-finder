@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const username = document.querySelector('#name')
   const passwordField = document.querySelector('#password')
   const submitButton = document.querySelector('#submit-button')
+  const bodyDiv = document.querySelector("body")
+  const joinBtn = document.querySelector(".join-btn")
+  const createBtn = document.querySelector(".create-btn")
+
   const USER_URL = 'http://localhost:3000/users'
 
   submitButton.addEventListener('click', validate)
@@ -28,15 +32,50 @@ document.addEventListener("DOMContentLoaded", () => {
   function loginHandler(returnedUser){
     if (returnedUser) {
       clearBody()
-      loadFirstPage()
+      loadFirstPage(returnedUser)
+      // appendUserGames(returnedUser)
     }else{
       showLoginError()
     }
   }
 
-  function loadFirstPage(){
+
+
+  function loadFirstPage(user){
     console.log("first page loaded")
+    bodyDiv.innerHTML +=
+    `
+      <div style="width: 50%; float:left">
+        <p> left side </p>
+        <ul id="user-games">
+
+        </ul>
+      </div>
+      <div style="width: 50%; float:right">
+       <div class = "button-container">
+         <button class="btn btn-primary btn-lg create-btn" type="button">
+           Create a Game
+         </button>
+         <button class="btn btn-primary btn-lg join-btn" type="button">
+           Join a Game
+         </button>
+       </div>
+      </div>
+    `
+    const ul = document.querySelector('#user-games')
+
+    console.log(user.games)
+    user.games.forEach (function(game) {
+      ul.innerHTML +=
+      `
+      <li> Game: ${game.name} </li>
+      <li> Address: ${game.address} </li>
+      <li> Start Time: ${game.start_time} </li>
+      `
+    })
+
   }
+
 
   function showLoginError(){
     const errorMsg = document.querySelector("#error")

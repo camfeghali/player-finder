@@ -7,3 +7,17 @@
 #error{
   color: red;
 }
+
+.button-container{
+  margin-left: 16%;
+  margin-top: 15%;
+}
+
+.create-btn{
+  width: 40%;
+  height: 20em;
+}
+.join-btn{
+  width: 40%;
+  height: 20em;
+}
