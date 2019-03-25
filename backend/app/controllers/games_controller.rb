@@ -5,4 +5,8 @@ class GamesController < ApplicationController
     render json: @games
   end
 
+  def create
+    byebug
+  end
+
 end

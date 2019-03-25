@@ -14,11 +14,11 @@ User.create(name: "Elizabeth Kosowski", username: "catLady", password: "ilovemov
 User.create(name: "Antoine Deeb", username: "tunaFish", password: "batata")
 User.create(name: "Brianna Dixon", username: "bananaLady", password: "ilovecats")
 
-Game.create(game_type: "basketball", name: "nba", address: "New York", start_time: DateTime.new(2019,3,25,16,30), end_time: DateTime.new(2019,3,25,17,30))
-Game.create(game_type: "basketball", name: "camille's game", address: "Atlanta", start_time: DateTime.new(2019,3,26,10,30), end_time: DateTime.new(2019,3,26,12,30))
-Game.create(game_type: "football", name: "eliz's game", address: "Atlanta", start_time: DateTime.new(2019,3,25,16,30), end_time: DateTime.new(2019,3,25,17,30))
-Game.create(game_type: "soccer", name: "epl", address: "New York", start_time: DateTime.new(2019,4,1,16,30), end_time: DateTime.new(2019,4,1,18,0))
-Game.create(game_type: "soccer", name: "english premier league", address: "New York", start_time: DateTime.new(2019,3,28,16,30), end_time: DateTime.new(2019,3,28,17,30))
+Game.create(game_type: "basketball", name: "nba", address: "New York", game_day: DateTime.new(2019,3,25,16,30), start_time: DateTime.new(2019,3,25,16,30), end_time: DateTime.new(2019,3,25,17,30))
+Game.create(game_type: "basketball", name: "camille's game", address: "Atlanta", game_day: DateTime.new(2019,3,26,10,30), start_time: DateTime.new(2019,3,26,10,30), end_time: DateTime.new(2019,3,26,12,30))
+Game.create(game_type: "football", name: "eliz's game", address: "Atlanta", game_day: DateTime.new(2019,3,25,16,30), start_time: DateTime.new(2019,3,25,16,30), end_time: DateTime.new(2019,3,25,17,30))
+Game.create(game_type: "soccer", name: "epl", address: "New York", game_day: DateTime.new(2019,4,1,16,30), start_time: DateTime.new(2019,4,1,16,30), end_time: DateTime.new(2019,4,1,18,0))
+Game.create(game_type: "soccer", name: "english premier league", address: "New York", game_day: DateTime.new(2019,3,28,16,30), start_time: DateTime.new(2019,3,28,16,30), end_time: DateTime.new(2019,3,28,17,30))
 
 Court.create(user_id: 1, game_id: 2)
 Court.create(user_id: 1, game_id: 1)
