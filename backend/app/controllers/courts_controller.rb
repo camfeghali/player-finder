@@ -12,4 +12,10 @@ class CourtsController < ApplicationController
     render json: @court
   end
 
+  def destroy
+    @court = Court.find(params[:id])
+    @court.destroy
+    render json: @court
+  end
+
 end

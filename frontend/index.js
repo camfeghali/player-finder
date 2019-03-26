@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   console.log("HEY Camille and Dolma are in the DOM!!!!!")
+
+  // -------------------- INPUT VALUES DIVS --------------------
   const username = document.querySelector('#name')
   const passwordField = document.querySelector('#password')
   const submitButton = document.querySelector('#submit-button')
@@ -9,14 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // const joinBtn = document.querySelector(".join-btn")
   // const createBtn = document.querySelector(".create-btn")
 
-
+  // -------------------- API URLS --------------------
   const USERS_URL = 'http://localhost:3000/users'
   const GAMES_URL = 'http://localhost:3000/games'
   const COURTS_URL = 'http://localhost:3000/courts'
 
   submitButton.addEventListener('click', validate)
 
-
+// ------------------- VALIDATE USER -----------------
   function validate(e) {
     e.preventDefault();
     fetch (USERS_URL)
@@ -26,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+// -------------------- VALIDATE AND FIND USER ----------------
   function validateAndFindUser(users) {
     // console.log(users)
     return users.find(function (user) {
@@ -33,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+// ------------------- HANDLE LOGIN  -------------------------
   function loginHandler(returnedUser){
     if (returnedUser) {
       clearBody()
@@ -45,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-
+// --------------------- LOAD FIRST PAGE ----------------------
   function loadFirstPage(user){
     console.log("first page loaded")
     createBody()
@@ -58,31 +62,38 @@ document.addEventListener("DOMContentLoaded", () => {
     gamesBtn.addEventListener('click', filterHandler)
     let gameList = document.querySelector('#games-list')
     gameList.addEventListener("click",  joinGameHandler)
+    const myGamesList = document.querySelector("#user-games")
+    myGamesList.addEventListener("click",  leaveGameHandler)
 
   }
 
  // ------------------- Append All Games To My List ---------------------
   function appendUserGamestoUL(user){
-    let ul = document.querySelector('#user-games')
-    user.games.forEach (function(game) {
-      ul.innerHTML +=
+    let myGameContainer = document.querySelector('#user-games')
+    let filteredByDateGames = filterByDate(user.games)
+    filteredByDateGames.forEach (function(game) {
+      myGameContainer.innerHTML +=
       `
-      <li> Game: ${game.name} </li>
-      <li> Address: ${game.address} </li>
-      <li> Game Day: ${game.game_day.split("T")[0]} </li>
-      <li> Start Time: ${game.start_time.split("T")[1]} </li>
-      <li> End Time: ${game.end_time.split("T")[1]} </li>
+      <div data-mygame-id=${game.id}>
+        <p> Game: ${game.name} </p>
+        <p> Address: ${game.address} </p>
+        <p> Game Day: ${game.game_day.split("T")[0]} </p>
+        <p> Start Time: ${game.start_time.split("T")[1]} </p>
+        <p> End Time: ${game.end_time.split("T")[1]} </p>
+        <button> Leave Game </button>
+      </div>
       `
     })
   }
 
+// -------------------- CREATE BODY OF FIRST PAGE -------------------
   function createBody() {
     bodyDiv.innerHTML +=
     `
       <div style="width: 30%; float:left">
-        <ul id="user-games">
+        <div id="user-games">
 
-        </ul>
+        </div>
       </div>
       <div style="width: 70%; float:right">
         <div class="form-container">
@@ -100,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `
   }
 
-// ------------------ LOGIN ERROR ---------------------------------------
+// ----------------------- LOGIN ERROR ---------------------------------------
 
   function showLoginError(){
     const errorMsg = document.querySelector("#error")
@@ -112,12 +123,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+// ------------------ CLEAR BODY OF LOGIN PAGE -------------------------
   function clearBody(){
     document.querySelector("body").innerHTML = ''
   }
 
 // --------------- GENERATE CREATE A GAME FORM --------------------------
-
   function generateForm() {
     const formDiv = document.querySelector('.form-container')
     formDiv.innerHTML =
@@ -174,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ------------------------ Fetch Requests ---------------------------
 
 // ------------------------ Post A Court  ---------------------------
-
 function postCourt(gameId){
   console.log("WE ARE POSTING a COURT")
 
@@ -200,7 +210,6 @@ function postCourt(gameId){
 }
 
 // ------------------------- Append a Game/Court to My List ---------------
-
   function appendCourtToMyList(court) {
     let ul = document.querySelector('#user-games')
     ul.innerHTML += `
@@ -213,7 +222,6 @@ function postCourt(gameId){
   }
 
 // ------------------------ Post a Game ---------------------------
-
   function postGame(e) {
 
     console.log("userId:", userId)
@@ -261,9 +269,11 @@ function postCourt(gameId){
     .then(games => filterGames(games, targetGames))
     .then(games => filterOutMyGames(games))
     .then(games => filterByCapacity(games))
+    .then(games => filterByDate(games))
     .then(filtered => appendAllGames(filtered))
   }
 
+// -------------------- FILTER LIST ----------------
   function filterHandler(event) {
     let targetGame = event.target.innerText
     if (targetGame === "All Games"){
@@ -273,12 +283,22 @@ function postCourt(gameId){
     }
   }
 
+// ------------------- FILTER BY CAPACITY ----------------
   function filterByCapacity(games){
     return games.filter((game) => {
       return (game.capacity > game.players.length)
     })
   }
 
+  // ------------------- FILTER BY DATE ----------------
+  function filterByDate(games){
+    return games.filter(game => {
+      let currentDate = new Date()
+      let gameDay = new Date(game.game_day)
+      return gameDay > currentDate
+    })
+  }
+// --------------------- FILTER BY SPORT -----------------
   function filterGames(games, targetGame) {
     return games.filter((game) => {
       return (game.game_type.toLowerCase() === targetGame.toLowerCase())
@@ -286,12 +306,14 @@ function postCourt(gameId){
   }
 
 
-
+// --------------------- FETCH and APPEND GAMES ----------------
   function fetchAllGames() {
     fetch(GAMES_URL)
     .then(resp => resp.json())
     .then(games => filterOutMyGames(games))
     .then(games => filterByCapacity(games))
+    .then(games => filterByDate(games))
+    // .then(games => console.log(games))
     .then(filteredGames => appendAllGames(filteredGames))
   }
 
@@ -325,7 +347,7 @@ function postCourt(gameId){
     })
   }
 
-
+// --------------------------- HANDLE JOINING A GAME -----------------
   function joinGameHandler(e) {
     if (e.target.innerText === "Join") {
       increasePlayerCountInFrontEnd(e)
@@ -334,11 +356,13 @@ function postCourt(gameId){
     }
   }
 
+  // ---------------- AFTER JOINING JOINING A GAME, Add IT TO MY LIST -----------------
   function addGameToMyList(e){
     let gameId = parseInt(e.target.parentNode.dataset.gameId)
     postCourt(gameId)
   }
 
+// -------------------- REMOVE A GAME FROM MY LIST --------------
   function removeGameFromList(e){
       e.target.parentNode.remove()
   }
@@ -350,4 +374,49 @@ function postCourt(gameId){
     }
   }
 
+  function leaveGameHandler(e){
+    if (e.target.innerText === "Leave Game"){
+      console.log("leaveclicked")
+      removeGameFromList(e)
+      let gameId = parseInt(e.target.parentNode.dataset.mygameId)
+      console.log(gameId)
+      // removeMyGameFromBackend(gameId)
+    }
+  }
+
+  function removeGameFromList(e){
+    e.target.parentNode.remove()
+    let gameId = parseInt(e.target.parentNode.dataset.mygameId)
+    fetch(COURTS_URL)
+    .then(res => res.json())
+    .then(courts => findCourtByGameAndUser(courts, gameId))
+    .then(foundCourt => removeMyGameFromBackend(foundCourt))
+  }
+
+
+  function removeMyGameFromBackend(foundCourt){
+    console.log(foundCourt)
+
+    let config =
+    {
+      method: "DELETE", // *GET, POST, PUT, DELETE, etc.
+      headers:
+      {
+        "Content-Type": "application/json",
+      }
+      // body: JSON.stringify(data),
+    }
+    fetch(`${COURTS_URL}/${foundCourt.id}`, config)
+  }
+
+
+
+  function findCourtByGameAndUser(courts, gameId) {
+    // console.log("we are here")
+    // console.log(typeof userId)
+    // debugger;
+    return courts.find((court) => {
+      return (court.game.id === gameId && court.user.id === userId)
+    })
+  }
 })
