@@ -61,8 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   }
 
+ // ------------------- Append All Games To My List ---------------------
   function appendUserGamestoUL(user){
-    const ul = document.querySelector('#user-games')
+    let ul = document.querySelector('#user-games')
     user.games.forEach (function(game) {
       ul.innerHTML +=
       `
@@ -174,13 +175,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ------------------------ Post A Court  ---------------------------
 
-function postCourt(game){
+function postCourt(gameId){
   console.log("WE ARE POSTING a COURT")
 
   let data =
   {
     user_id: userId,
-    game_id: game.id
+    game_id: gameId
   }
   let config =
   {
@@ -194,14 +195,26 @@ function postCourt(game){
 
   fetch(COURTS_URL, config)
   .then(resp => resp.json())
-  .then(court => console.log(court))
+  .then(court => appendCourtToMyList(court))
 
 }
+
+// ------------------------- Append a Game/Court to My List ---------------
+
+  function appendCourtToMyList(court) {
+    let ul = document.querySelector('#user-games')
+    ul.innerHTML += `
+      <li> Game: ${court.game.name} </li>
+      <li> Address: ${court.game.address} </li>
+      <li> Game Day: ${court.game.game_day.split("T")[0]} </li>
+      <li> Start Time: ${court.game.start_time.split("T")[1]} </li>
+      <li> End Time: ${court.game.end_time.split("T")[1]} </li>
+    `
+  }
 
 // ------------------------ Post a Game ---------------------------
 
   function postGame(e) {
-
 
     console.log("userId:", userId)
 
@@ -236,7 +249,7 @@ function postCourt(game){
     }
     fetch(GAMES_URL, config)
     .then(resp => resp.json())
-    .then(game => postCourt(game))
+    .then(game => postCourt(game.id))
 
   }
 
@@ -246,6 +259,8 @@ function postCourt(game){
     fetch(GAMES_URL)
     .then(resp => resp.json())
     .then(games => filterGames(games, targetGames))
+    .then(games => filterOutMyGames(games))
+    .then(games => filterByCapacity(games))
     .then(filtered => appendAllGames(filtered))
   }
 
@@ -256,6 +271,12 @@ function postCourt(game){
     }else{
       fetchFilteredGames(targetGame)
     }
+  }
+
+  function filterByCapacity(games){
+    return games.filter((game) => {
+      return (game.capacity > game.players.length)
+    })
   }
 
   function filterGames(games, targetGame) {
@@ -269,9 +290,21 @@ function postCourt(game){
   function fetchAllGames() {
     fetch(GAMES_URL)
     .then(resp => resp.json())
-    .then(games => appendAllGames(games))
+    .then(games => filterOutMyGames(games))
+    .then(games => filterByCapacity(games))
+    .then(filteredGames => appendAllGames(filteredGames))
   }
 
+//------------------------ Filter Games --------------------------
+
+  function filterOutMyGames(games) {
+    console.log(games);
+    return games.filter((game) => {
+      return !game.players.find(player => player.id === userId)
+    })
+  }
+
+// ---------------- Append All Games List ---------------------
   function appendAllGames(games) {
     let gameList = document.querySelector('#games-list')
     gameList.innerHTML = ''
@@ -294,20 +327,20 @@ function postCourt(game){
 
 
   function joinGameHandler(e) {
-    increasePlayerCountInFrontEnd(e)
-    removeGameFromList(e)
-    addGameToMyList(e)
-    // saveToDatabase(e)
+    if (e.target.innerText === "Join") {
+      increasePlayerCountInFrontEnd(e)
+      removeGameFromList(e)
+      addGameToMyList(e)
+    }
   }
 
   function addGameToMyList(e){
-    console.log(e.target.parentNode)
+    let gameId = parseInt(e.target.parentNode.dataset.gameId)
+    postCourt(gameId)
   }
 
   function removeGameFromList(e){
-    if (e.target.innerText === "Join") {
       e.target.parentNode.remove()
-    }
   }
 
 // --------------- Increase player Count in Front End ---------------
