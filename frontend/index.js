@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button  id = "basketball-btn" >Basketball</button>
           <button  id = "football-btn" >Football</button>
           <button  id = "soccer-btn" >Soccer</button>
-          <button  id = "pingpong-btn" >Pingpong</button>
+          <button  id = "pingpong-btn" >Ping Pong</button>
           <button  id = "all-btn" >All Games</button>
         </div>
         <div id = "games-list">
@@ -145,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <option>Basketball</option>
                 <option>Football</option>
                 <option>Ping Pong</option>
-                <option>Hockey</option>
+                <option>Soccer</option>
             </select>
         </div>
 
@@ -213,11 +213,15 @@ function postCourt(gameId){
   function appendCourtToMyList(court) {
     let ul = document.querySelector('#user-games')
     ul.innerHTML += `
-      <li> Game: ${court.game.name} </li>
-      <li> Address: ${court.game.address} </li>
-      <li> Game Day: ${court.game.game_day.split("T")[0]} </li>
-      <li> Start Time: ${court.game.start_time.split("T")[1]} </li>
-      <li> End Time: ${court.game.end_time.split("T")[1]} </li>
+
+    <div data-mygame-id=${court.game.id}>
+    <p> Game: ${court.game.name} </p>
+    <p> Address: ${court.game.address} </p>
+    <p> Game Day: ${court.game.game_day.split("T")[0]} </p>
+    <p> Start Time: ${court.game.start_time.split("T")[1]} </p>
+    <p> End Time: ${court.game.end_time.split("T")[1]} </p>
+    <button> Leave Game </button>
+    </div>
     `
   }
 
