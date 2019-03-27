@@ -443,13 +443,13 @@ function postCourt(gameId){
       // let div
 
       function onMapClick(e) {
-        getAddress(e.latlng)
         popup
             .setLatLng(e.latlng)
             .setContent(generateForm)
             .openOn(mymap);
             const createNewGameBtn = document.querySelector('#create-new-game-btn')
             createNewGameBtn.addEventListener('click', postGame)
+            getAddress(e.latlng)
       }
       mymap.on('click', onMapClick);
 
@@ -458,10 +458,14 @@ function postCourt(gameId){
   function getAddress(latlng){
     let lat = latlng.lat
     let lng = latlng.lng
+    const locationInput = document.querySelector('#location')
     console.log("type of lat and long:", typeof lat)
-    fetch(`http://api.geonames.org/findNearestAddress?lat=${lat}&lng=${lng}&username=demo`)
-    .then(resp => xmlToJson(resp))
-    .then(data => console.log(data))
+    fetch(`https://api.opencagedata.com/geocode/v1/json?key=52d0a97508b24a06a1477a4b7280fb10&q=${lat}%2C${lng}&pretty=1&no_annotations=1`)
+    .then(resp => resp.json())
+    .then(data => {
+      console.log(locationInput.value)
+      locationInput.value = data.results["0"].formatted
+    })
   }
 
 })
