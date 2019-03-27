@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appendUserGamestoUL(user);
     generateForm();
     fetchAllGames();
+    mapGenerator()
     const createNewGameBtn = document.querySelector('#create-new-game-btn')
     createNewGameBtn.addEventListener('click', postGame)
     const gamesBtn = document.querySelector('#games-buttons')
@@ -96,6 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
       <div style="width: 70%; float:right">
+        <div id="mapid"></div>
         <div class="form-container">
         </div >
         <div id ="games-buttons">
@@ -179,6 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="btn btn-primary btn-block" id = "create-new-game-btn" type="submit">Submit</button>
     </form>
     `
+    return formDiv
   }
 
 
@@ -423,4 +426,29 @@ function postCourt(gameId){
       return (court.game.id === gameId && court.user.id === userId)
     })
   }
+
+
+  // -------------------- Map Generator -------------------
+  function mapGenerator(){
+    var mymap = L.map('mapid').setView([40.727822, -73.985776], 13);
+    var popup = L.popup();
+
+    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox.streets',
+        accessToken: 'pk.eyJ1IjoiY29va2kiLCJhIjoiY2p0bm53b2IwMHAxNjN5cGRuYXJzdG1rNCJ9.Z7p-0gkunkycqAbdMPZiuQ'
+      }).addTo(mymap);
+
+      function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent(generateForm())
+            .openOn(mymap);
+      }
+      mymap.on('click', onMapClick);
+  }
+
+
+
 })

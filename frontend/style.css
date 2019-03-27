@@ -1,3 +1,10 @@
+#mapid { height: 35em; }
+
+.leaflet-popup-content {
+     width: 400px;
+     maxHeight: 600px;
+}
+
 .text-center{
     width: 22%;
     margin-left: 40%;
