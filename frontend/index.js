@@ -54,11 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("first page loaded")
     createBody()
     appendUserGamestoUL(user);
-    generateForm();
+    // generateForm();
     fetchAllGames();
     mapGenerator()
-    const createNewGameBtn = document.querySelector('#create-new-game-btn')
-    createNewGameBtn.addEventListener('click', postGame)
+    // const createNewGameBtn = document.querySelector('#create-new-game-btn')
+    // createNewGameBtn.addEventListener('click', postGame)
     const gamesBtn = document.querySelector('#games-buttons')
     gamesBtn.addEventListener('click', filterHandler)
     let gameList = document.querySelector('#games-list')
@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
 
         <br>
-        <button class="btn btn-primary btn-block" id = "create-new-game-btn" type="submit">Submit</button>
+        <button class="btn btn-primary btn-block" id = "create-new-game-btn">Submit</button>
     </form>
     `
     return formDiv
@@ -428,10 +428,10 @@ function postCourt(gameId){
   }
 
 
-  // -------------------- Map Generator -------------------
+  // -------------------- Map Generator ----------------------------
   function mapGenerator(){
-    var mymap = L.map('mapid').setView([40.727822, -73.985776], 13);
-    var popup = L.popup();
+    let mymap = L.map('mapid').setView([40.727822, -73.985776], 13);
+    let popup = L.popup();
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -440,15 +440,28 @@ function postCourt(gameId){
         accessToken: 'pk.eyJ1IjoiY29va2kiLCJhIjoiY2p0bm53b2IwMHAxNjN5cGRuYXJzdG1rNCJ9.Z7p-0gkunkycqAbdMPZiuQ'
       }).addTo(mymap);
 
+      // let div
+
       function onMapClick(e) {
+        getAddress(e.latlng)
         popup
             .setLatLng(e.latlng)
-            .setContent(generateForm())
+            .setContent(generateForm)
             .openOn(mymap);
+            const createNewGameBtn = document.querySelector('#create-new-game-btn')
+            createNewGameBtn.addEventListener('click', postGame)
       }
       mymap.on('click', onMapClick);
+
   }
 
-
+  function getAddress(latlng){
+    let lat = latlng.lat
+    let lng = latlng.lng
+    console.log("type of lat and long:", typeof lat)
+    fetch(`http://api.geonames.org/findNearestAddress?lat=${lat}&lng=${lng}&username=demo`)
+    .then(resp => xmlToJson(resp))
+    .then(data => console.log(data))
+  }
 
 })
