@@ -10,12 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let userId;
   let latitudeLongitude;
   let mymap;
-  let markersArray = [];
-
-
-  function logArray(markersArray){
-    markersArray.forEach(marker => console.log(marker))
-  }
 
   // ----------------- Sports ICONS -------------------
   let basketBallIcon = L.icon({
@@ -28,37 +22,39 @@ document.addEventListener("DOMContentLoaded", () => {
     shadowAnchor: [4, 62],  // the same for the shadow
     popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
-  let soccerIcon = L.icon({
-    iconUrl: 'https://www.teenmissions.org/wp-content/uploads/2016/05/1407858226.png',
-    // shadowUrl: 'leaf-shadow.png',
+let soccerIcon = L.icon({
+  iconUrl: 'https://www.teenmissions.org/wp-content/uploads/2016/05/1407858226.png',
+  // shadowUrl: 'leaf-shadow.png',
 
-    iconSize:     [38, 38], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    shadowAnchor: [4, 62],  // the same for the shadow
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-  });
-  let footBallIcon = L.icon({
-    iconUrl: 'https://www.bookiemonsterz.com/wp-content/uploads/2018/03/e0c7b1c05be00472cfc02830f723953b_football-clip-art-with-transparent-background-3-clipartandscrap-football-clipart-transparent-background_2507-2288.png',
-    // shadowUrl: 'leaf-shadow.png',
+  iconSize:     [38, 38], // size of the icon
+  shadowSize:   [50, 64], // size of the shadow
+  iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+  shadowAnchor: [4, 62],  // the same for the shadow
+  popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+let footBallIcon = L.icon({
+  iconUrl: 'https://www.bookiemonsterz.com/wp-content/uploads/2018/03/e0c7b1c05be00472cfc02830f723953b_football-clip-art-with-transparent-background-3-clipartandscrap-football-clipart-transparent-background_2507-2288.png',
+  // shadowUrl: 'leaf-shadow.png',
 
-    iconSize:     [38, 38], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    shadowAnchor: [4, 62],  // the same for the shadow
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-  });
-  let pingPongIcon = L.icon({
-    iconUrl: 'http://pluspng.com/img-png/pingpong-hd-png--565.png',
-    // shadowUrl: 'leaf-shadow.png',
+  iconSize:     [38, 38], // size of the icon
+  shadowSize:   [50, 64], // size of the shadow
+  iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+  shadowAnchor: [4, 62],  // the same for the shadow
+  popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+let pingPongIcon = L.icon({
+  iconUrl: 'http://pluspng.com/img-png/pingpong-hd-png--565.png',
+  // shadowUrl: 'leaf-shadow.png',
 
-    iconSize:     [38, 38], // size of the icon
-    shadowSize:   [50, 64], // size of the shadow
-    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-    shadowAnchor: [4, 62],  // the same for the shadow
-    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-  });
+  iconSize:     [38, 38], // size of the icon
+  shadowSize:   [50, 64], // size of the shadow
+  iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+  shadowAnchor: [4, 62],  // the same for the shadow
+  popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
 
+  // const joinBtn = document.querySelector(".join-btn")
+  // const createBtn = document.querySelector(".create-btn")
 
   // -------------------- API URLS --------------------
   const USERS_URL = 'http://localhost:3000/users'
@@ -110,8 +106,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // createNewGameBtn.addEventListener('click', postGame)
     const gamesBtn = document.querySelector('#games-buttons')
     gamesBtn.addEventListener('click', filterHandler)
-    // let gameList = document.querySelector('#games-list')
-    // gameList.addEventListener("click",  joinGameHandler)
+    let gameList = document.querySelector('#games-list')
+    gameList.addEventListener("click",  joinGameHandler)
     const myGamesList = document.querySelector("#user-games")
     myGamesList.addEventListener("click",  leaveGameHandler)
 
@@ -133,6 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <button> Leave Game </button>
       </div>
       `
+      console.log(game)
+      // addGameToMap(game)
     })
 
   }
@@ -276,6 +274,7 @@ function postCourt(gameId){
     <button> Leave Game </button>
     </div>
     `
+    // addGameToMap(court.game)
   }
 
 // ------------------------ Post a Game ---------------------------
@@ -326,7 +325,6 @@ function postCourt(gameId){
 // ---------------------- FETCH ALL GAMES -----------------------------
 
   function fetchFilteredGames(targetGames){
-    // clear map
     fetch(GAMES_URL)
     .then(resp => resp.json())
     .then(games => filterGames(games, targetGames))
@@ -334,8 +332,6 @@ function postCourt(gameId){
     .then(games => filterByCapacity(games))
     .then(games => filterByDate(games))
     .then(filtered => appendAllGames(filtered))
-    .then(games => games.forEach(addGameToMap))
-
   }
 
 // -------------------- FILTER LIST ----------------
@@ -378,6 +374,7 @@ function postCourt(gameId){
     .then(games => filterOutMyGames(games))
     .then(games => filterByCapacity(games))
     .then(games => filterByDate(games))
+    // .then(games => console.log(games))
     .then(filteredGames => appendAllGames(filteredGames))
 
   }
@@ -395,7 +392,6 @@ function postCourt(gameId){
   function appendAllGames(games) {
     let gameList = document.querySelector('#games-list')
     gameList.innerHTML = ''
-
     games.forEach((game) => {
       gameList.innerHTML +=
       `<div data-game-id = ${game.id}>
@@ -412,7 +408,6 @@ function postCourt(gameId){
       `
     })
     games.forEach(game => addGameToMap(game))
-    return games
   }
 
 // --------------------------- HANDLE JOINING A GAME -----------------
@@ -463,6 +458,8 @@ function postCourt(gameId){
 
 
   function removeMyGameFromBackend(foundCourt){
+    console.log(foundCourt)
+
     let config =
     {
       method: "DELETE", // *GET, POST, PUT, DELETE, etc.
@@ -470,6 +467,7 @@ function postCourt(gameId){
       {
         "Content-Type": "application/json",
       }
+      // body: JSON.stringify(data),
     }
     fetch(`${COURTS_URL}/${foundCourt.id}`, config)
   }
@@ -477,6 +475,9 @@ function postCourt(gameId){
 
 
   function findCourtByGameAndUser(courts, gameId) {
+    // console.log("we are here")
+    // console.log(typeof userId)
+    // debugger;
     return courts.find((court) => {
       return (court.game.id === gameId && court.user.id === userId)
     })
@@ -525,19 +526,18 @@ function postCourt(gameId){
 
   // ----- Show Markers on Map -------------
   function addGameToMap(game){
+    console.log(game.game_type)
     let icon;
-    if (game.game_type === "soccer"){
+    if (game.game_type.toLowerCase() === "soccer"){
       icon = soccerIcon
-    }else if (game.game_type === "basketball") {
+    }else if (game.game_type.toLowerCase() === "basketball") {
       icon = basketBallIcon
-    }else if (game.game_type === "football") {
+    }else if (game.game_type.toLowerCase() === "football") {
       icon = footBallIcon
-    }else if (game.game_type === "ping pong") {
+    }else if (game.game_type.toLowerCase() === "ping pong") {
       icon = pingPongIcon
     }
-
-    let marker = L.marker([game.lat, game.lng], {icon: icon}).bindPopup(fillGameDataInPopup(game)).addTo(mymap);
-    markersArray.push(marker)
+    marker = L.marker([game.lat, game.lng], {icon: icon}).bindPopup(fillGameDataInPopup(game)).addTo(mymap);
   }
 
   function fillGameDataInPopup(game){
@@ -559,6 +559,5 @@ function postCourt(gameId){
     return gameInfoDiv
 
   }
-
 
 })
