@@ -17,11 +17,7 @@ function xmlToJson(xml) {
 	}
 
 	// do children
-	// If just one text node inside
-	if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
-		obj = xml.childNodes[0].nodeValue;
-	}
-	else if (xml.hasChildNodes()) {
+	if (xml.hasChildNodes()) {
 		for(var i = 0; i < xml.childNodes.length; i++) {
 			var item = xml.childNodes.item(i);
 			var nodeName = item.nodeName;
@@ -38,4 +34,4 @@ function xmlToJson(xml) {
 		}
 	}
 	return obj;
-}
+};
