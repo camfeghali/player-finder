@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitButton = document.querySelector('#submit-button')
   const bodyDiv = document.querySelector("body")
   let userId;
+  let latitudeLongitude;
+  let mymap;
+
   // const joinBtn = document.querySelector(".join-btn")
   // const createBtn = document.querySelector(".create-btn")
 
@@ -55,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     createBody()
     appendUserGamestoUL(user);
     // generateForm();
-    fetchAllGames();
     mapGenerator()
+    fetchAllGames();
     // const createNewGameBtn = document.querySelector('#create-new-game-btn')
     // createNewGameBtn.addEventListener('click', postGame)
     const gamesBtn = document.querySelector('#games-buttons')
@@ -84,7 +87,10 @@ document.addEventListener("DOMContentLoaded", () => {
         <button> Leave Game </button>
       </div>
       `
+      console.log(game)
+      // addGameToMap(game)
     })
+
   }
 
 // -------------------- CREATE BODY OF FIRST PAGE -------------------
@@ -226,12 +232,15 @@ function postCourt(gameId){
     <button> Leave Game </button>
     </div>
     `
+    // addGameToMap(court.game)
   }
 
 // ------------------------ Post a Game ---------------------------
-  function postGame(e) {
+  function postGame(event) {
+    event.preventDefault();
 
     console.log("userId:", userId)
+    console.log("latlng: ", latitudeLongitude)
 
     let gameName = document.querySelector("#game-name").value
     let sport = document.querySelector("#sport-type").value
@@ -240,6 +249,8 @@ function postCourt(gameId){
     let endTime = document.querySelector("#end-time").value
     let gameCapacity = document.querySelector("#capacity").value
     let gameAddress = document.querySelector("#location").value
+    let lat = latitudeLongitude.lat
+    let lng = latitudeLongitude.lng
 
     let data =
     {
@@ -249,10 +260,11 @@ function postCourt(gameId){
       game_day: gameDay,
       start_time: startTime,
       end_time: endTime,
-      capacity: gameCapacity
+      capacity: gameCapacity,
+      lat: lat,
+      lng: lng
     }
 
-    e.preventDefault();
     let config =
     {
       method: "POST", // *GET, POST, PUT, DELETE, etc.
@@ -322,6 +334,7 @@ function postCourt(gameId){
     .then(games => filterByDate(games))
     // .then(games => console.log(games))
     .then(filteredGames => appendAllGames(filteredGames))
+
   }
 
 //------------------------ Filter Games --------------------------
@@ -352,6 +365,7 @@ function postCourt(gameId){
       </div>
       `
     })
+    games.forEach(game => addGameToMap(game))
   }
 
 // --------------------------- HANDLE JOINING A GAME -----------------
@@ -430,9 +444,8 @@ function postCourt(gameId){
 
   // -------------------- Map Generator ----------------------------
   function mapGenerator(){
-    let mymap = L.map('mapid').setView([40.727822, -73.985776], 13);
     let popup = L.popup();
-
+    mymap = L.map('mapid').setView([40.727822, -73.985776], 13);
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
         maxZoom: 18,
@@ -442,30 +455,39 @@ function postCourt(gameId){
 
       // let div
 
+// -------------------------- Generate Form on Map Click ---------------------
       function onMapClick(e) {
         popup
             .setLatLng(e.latlng)
             .setContent(generateForm)
             .openOn(mymap);
             const createNewGameBtn = document.querySelector('#create-new-game-btn')
+            latitudeLongitude = e.latlng
             createNewGameBtn.addEventListener('click', postGame)
             getAddress(e.latlng)
       }
       mymap.on('click', onMapClick);
 
   }
-
+// ------------------ CONVERT LAT LNG TO ADDRESS -----------------
   function getAddress(latlng){
     let lat = latlng.lat
     let lng = latlng.lng
     const locationInput = document.querySelector('#location')
-    console.log("type of lat and long:", typeof lat)
     fetch(`https://api.opencagedata.com/geocode/v1/json?key=52d0a97508b24a06a1477a4b7280fb10&q=${lat}%2C${lng}&pretty=1&no_annotations=1`)
     .then(resp => resp.json())
     .then(data => {
       console.log(locationInput.value)
       locationInput.value = data.results["0"].formatted
     })
+  }
+
+  // ----- Show Markers on Map -------------
+  function addGameToMap(game){
+    console.log("were in showmarkeronmap")
+    console.log(game)
+    console.log("type of lat:", typeof game.lat)
+    marker = L.marker([game.lat, game.lng]).addTo(mymap);
   }
 
 })
