@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----------------- Sports ICONS -------------------
   let basketBallIcon = L.icon({
-    iconUrl: 'media/basketball.jpeg',
+    iconUrl: 'media/basketball.png',
 
     iconSize:     [38, 38], // size of the icon
     shadowSize:   [50, 64], // size of the shadow
@@ -33,7 +33,7 @@ let soccerIcon = L.icon({
   popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 let footBallIcon = L.icon({
-  iconUrl: 'https://www.bookiemonsterz.com/wp-content/uploads/2018/03/e0c7b1c05be00472cfc02830f723953b_football-clip-art-with-transparent-background-3-clipartandscrap-football-clipart-transparent-background_2507-2288.png',
+  iconUrl: 'media/football.png',
   // shadowUrl: 'leaf-shadow.png',
 
   iconSize:     [38, 38], // size of the icon
@@ -43,7 +43,7 @@ let footBallIcon = L.icon({
   popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 let pingPongIcon = L.icon({
-  iconUrl: 'http://pluspng.com/img-png/pingpong-hd-png--565.png',
+  iconUrl: 'media/pingpong.png',
   // shadowUrl: 'leaf-shadow.png',
 
   iconSize:     [38, 38], // size of the icon
@@ -119,23 +119,13 @@ let pingPongIcon = L.icon({
     let filteredByDateGames = filterByDate(user.games)
     filteredByDateGames.forEach (function(game) {
       myGameContainer.innerHTML +=
-      // <div data-mygame-id=${game.id}>
-      //   <p> Game: ${game.name} </p>
-      //   <p> Address: ${game.address} </p>
-      //   <p> Game Day: ${game.game_day.split("T")[0]} </p>
-      //   <p> Start Time: ${game.start_time.split("T")[1]} </p>
-      //   <p> End Time: ${game.end_time.split("T")[1]} </p>
-      //   <button> Leave Game </button>
-      // </div>
-
-
 
       `
       <div class="card border-primary mb-3" data-mygame-id=${game.id}>
           <div class="card-body">
             <div class="wrap">
               <div class="card-game-name-box">
-                <h2 class="card-title">${game.name}</h2>
+                <h2 class="card-title">${game.name.charAt(0).toUpperCase() + game.name.slice(1)}</h2>
               </div>
             </div>
               <div class="wrap">
@@ -143,10 +133,12 @@ let pingPongIcon = L.icon({
                   <img src=${iconDisplayer(game.game_type)} height="32" width="32">
                 </div> <br>
             </div>
-              <p class="card-text"> Address: ${game.address} </p>
-              <p class="card-text"> Game Day: ${game.game_day.split("T")[0]} </p>
-              <p class="card-text"> Start Time: ${game.start_time.split("T")[1]} </p>
-              <p class="card-text"> End Time: ${game.end_time.split("T")[1]} </p>
+              <p class="card-text"> Where: ${game.address.split(",").slice(0, 2)} --- </p>
+              <p class="card-text"> On: ${game.game_day.split("T")[0]}</p>
+              <br>
+              <p class="card-text"> At: ${game.start_time.split("T")[1].slice(0, 5)} - </p>
+              <p class="card-text"> Until: ${game.end_time.split("T")[1].slice(0, 5)}  </p>
+              <br>
               <button class = " btn btn-outline-primary"> Leave Game </button>
           </div>
       </div>
@@ -160,27 +152,51 @@ let pingPongIcon = L.icon({
 // -------------------- CREATE BODY OF FIRST PAGE -------------------
   function createBody() {
     bodyDiv.innerHTML +=
+
     `
     <div class="row">
       <div class="col" style="margin-left:10px; width:20em">
+        <h1> MY GAMES !! </h1>
         <div id="user-games">
         </div>
       </div>
-      <div class="col" style="width:20em">
+      <div class="col" style="width:20em; margin-right: 12px">
         <div id="mapid">
         </div>
 
-        <div id ="games-buttons" class="nav nav-pills justify-content-left">
-         <button  id = "basketball-btn" class="nav-item btn btn-outline-primary edit-margin">Basketball</button>
-         <button  id = "football-btn" class="nav-item btn btn-outline-primary edit-margin">Football</button>
-         <button  id = "soccer-btn" class="nav-item btn btn-outline-primary edit-margin">Soccer</button>
-         <button  id = "pingpong-btn" class="nav-item btn btn-outline-primary edit-margin">Ping Pong</button>
-         <button  id = "all-btn" class="nav-item btn btn-outline-primary edit-margin">All Games</button>
-       </div>
+
+
+       <nav class="navbar navbar-expand-sm navbar-light bg-primary-outline mb-3">
+        <div id ="games-buttons" class="container">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id = "basketball-btn">Basketball</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id = "football-btn">Football</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id = "soccer-btn">Soccer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id = "pingpong-btn">Ping Pong</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id = "all-btn">All Games</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
         <div id = "games-list">
         </div>
       </div>
     </div>
+
+
     `
   }
 
@@ -203,7 +219,8 @@ let pingPongIcon = L.icon({
 
 // --------------- GENERATE CREATE A GAME FORM --------------------------
   function generateForm() {
-    const formDiv = document.querySelector('.form-container')
+    // const formDiv = document.querySelector('.form-container')
+    const formDiv = document.createElement('div')
     formDiv.innerHTML =
     `
     <form>
@@ -291,7 +308,7 @@ function postCourt(gameId){
         <div class="card-body">
           <div class="wrap">
             <div class="card-game-name-box">
-              <h2 class="card-title">${court.game.name}</h2>
+              <h2 class="card-title">${court.game.name.charAt(0).toUpperCase() + court.game.name.slice(1)}</h2>
             </div>
           </div>
             <div class="wrap">
@@ -299,10 +316,10 @@ function postCourt(gameId){
                 <img src=${iconDisplayer(court.game.game_type)} height="32" width="32">
               </div>
             </div> <br>
-            <p class="card-text"> Address: ${court.game.address} </p>
-            <p class="card-text"> Game Day: ${court.game.game_day.split("T")[0]} </p>
-            <p class="card-text"> Start Time: ${court.game.start_time.split("T")[1]} </p>
-            <p class="card-text"> End Time: ${court.game.end_time.split("T")[1]} </p>
+            <p class="card-text"> Where: ${court.game.address.split(",").slice(0, 2)} </p>
+            <p class="card-text"> On: ${court.game.game_day.split("T")[0].slice(0, 5)} </p>
+            <p class="card-text"> At: ${court.game.start_time.split("T")[1].slice(0, 5)} </p>
+            <p class="card-text"> Until: ${court.game.end_time.split("T")[1].slice(0, 5)} </p>
             <button class = " btn btn-outline-primary"> Leave Game </button>
         </div>
     </div>
@@ -424,34 +441,21 @@ function postCourt(gameId){
     gameList.innerHTML = ''
     games.forEach((game) => {
       gameList.innerHTML +=
-
-      // <div class="card border-primary mb-3" data-game-id = ${game.id}>
-      //
-      //     <p> ${game.name}</p>
-      //     <p> ${game.game_type} </p>
-      //     <p> ${game.address} </p>
-      //     <p> ${game.game_day} </p>
-      //     <p> ${game.start_time} </p>
-      //     <p> ${game.end_time} </p>
-      //     <p> ${game.capacity} </p>
-      //     <p class="game-player-count"> ${game.players.length} </p>
-      //     <button >Join Game</button>
-      //
-      // </div>
       `
       <div class="card border-danger mb-3" data-game-id = ${game.id}>
           <div class="card-body">
-              <h4 class="card-title">${game.name}</h4>
+              <h3 class="card-title">${game.name.charAt(0).toUpperCase() + game.name.slice(1)}</h3>
               <img src=${iconDisplayer(game.game_type)} height="32" width="32">
-              <p class="card-text"> ${game.address} </p>
-              <p class="card-text"> ${game.game_day} </p>
-              <p class="card-text"> ${game.start_time} </p>
-              <p class="card-text"> ${game.end_time} </p>
-              <p class="card-text"> ${game.capacity} </p>
+              <p class="card-text"> Where: ${game.address.split(",").slice(0, 2)} </p>
+              <p class="card-text"> On: ${game.game_day.split("T")[0]} </p>
+              <p class="card-text"> At: ${game.start_time.split("T")[1].slice(0, 5)} </p>
+              <p class="card-text"> Until: ${game.end_time.split("T")[1].slice(0, 5)} </p>
+              <p class="card-text"> Capacity: ${game.capacity + " / " + game.players.length} </p>
               <button class = "btn btn-outline-primary" > Join Game </button>
           </div>
       </div>
       `
+
     })
     games.forEach(game => addGameToMap(game))
   }
@@ -538,8 +542,6 @@ function postCourt(gameId){
         accessToken: 'pk.eyJ1IjoiY29va2kiLCJhIjoiY2p0bm53b2IwMHAxNjN5cGRuYXJzdG1rNCJ9.Z7p-0gkunkycqAbdMPZiuQ'
       }).addTo(mymap);
 
-      // let div
-
 // -------------------------- Generate Form on Map Click ---------------------
       function onMapClick(e) {
         popup
@@ -556,6 +558,7 @@ function postCourt(gameId){
   }
 // ------------------ CONVERT LAT LNG TO ADDRESS -----------------
   function getAddress(latlng){
+    console.log("get address running")
     let lat = latlng.lat
     let lng = latlng.lng
     const locationInput = document.querySelector('#location')
@@ -586,15 +589,14 @@ function postCourt(gameId){
     gameInfoDiv.innerHTML =
     `
     <div data-game-id = ${game.id} class='pop-up-info'>
-      <p> ${game.name}</p>
-      <p> ${game.game_type} </p>
-      <p> ${game.address} </p>
-      <p> ${game.game_day} </p>
-      <p> ${game.start_time} </p>
-      <p> ${game.end_time} </p>
-      <p> ${game.capacity} </p>
+      <h3 class="card-title">${game.name.charAt(0).toUpperCase() + game.name.slice(1)}</h3>
+      <img src=${iconDisplayer(game.game_type)} height="32" width="32">
+      <p class="card-text"> Where: ${game.address.split(",").slice(0, 2)} </p>
+      <p class="card-text"> On: ${game.game_day.split("T")[0]} </p>
+      <p class="card-text"> At: ${game.start_time.split("T")[1].slice(0, 5)} </p>
+      <p class="card-text"> Until: ${game.end_time.split("T")[1].slice(0, 5)} </p>
+      <p class="card-text"> Capacity: ${game.capacity + " / " + game.players.length} </p>
       <p class="game-player-count"> ${game.players.length} </p>
-      <button>Join</button>
     </div>
     `
     return gameInfoDiv
@@ -602,14 +604,14 @@ function postCourt(gameId){
   }
 
   function iconDisplayer(gameType){
-    if (gameType === "basketball"){
-      return "media/basketball.jpeg"
-    }else if (gameType === "soccer") {
+    if (gameType.toLowerCase() === "basketball"){
+      return "media/basketball.png"
+    }else if (gameType.toLowerCase() === "soccer") {
       return "media/soccer.png"
-    }else if(gameType === "football"){
-      return "media/football"
-    }else if (true) {
-      return "media/football"
+    }else if(gameType.toLowerCase() === "football"){
+      return "media/football.png"
+    }else if (gameType.toLowerCase() === "ping pong") {
+      return "media/pingpong.png"
     }
   }
 
