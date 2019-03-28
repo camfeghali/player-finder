@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
 
   console.log("HEY Camille and Dolma are in the DOM!!!!!")
@@ -118,19 +119,19 @@ let pingPongIcon = L.icon({
     let filteredByDateGames = filterByDate(user.games)
     filteredByDateGames.forEach (function(game) {
       myGameContainer.innerHTML +=
+      // <div data-mygame-id=${game.id}>
+      //   <p> Game: ${game.name} </p>
+      //   <p> Address: ${game.address} </p>
+      //   <p> Game Day: ${game.game_day.split("T")[0]} </p>
+      //   <p> Start Time: ${game.start_time.split("T")[1]} </p>
+      //   <p> End Time: ${game.end_time.split("T")[1]} </p>
+      //   <button> Leave Game </button>
+      // </div>
+
+
+
       `
-      <div data-mygame-id=${game.id}>
-        <p> Game: ${game.name} </p>
-        <p> Address: ${game.address} </p>
-        <p> Game Day: ${game.game_day.split("T")[0]} </p>
-        <p> Start Time: ${game.start_time.split("T")[1]} </p>
-        <p> End Time: ${game.end_time.split("T")[1]} </p>
-        <button> Leave Game </button>
-      </div>
-
-
-
-      <div class="card border-primary mb-3">
+      <div class="card border-primary mb-3" data-mygame-id=${game.id}>
           <div class="card-body">
             <div class="wrap">
               <div class="card-game-name-box">
@@ -139,13 +140,17 @@ let pingPongIcon = L.icon({
               <div class="wrap">
                 <div class="box">
                   <img src=${iconDisplayer(game.game_type)} height="32" width="32">
-                </div>
+                </div> <br>
             </div>
-              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</p>
+              <p class="card-text"> Address: ${game.address} </p>
+              <p class="card-text"> Game Day: ${game.game_day.split("T")[0]} </p>
+              <p class="card-text"> Start Time: ${game.start_time.split("T")[1]} </p>
+              <p class="card-text"> End Time: ${game.end_time.split("T")[1]} </p>
+              <button class = " btn btn-outline-primary"> Leave Game </button>
           </div>
       </div>
       `
-      console.log(game)
+
       // addGameToMap(game)
     })
 
@@ -161,6 +166,14 @@ let pingPongIcon = L.icon({
       </div>
       <div class="col" style="width:20em">
         <div id="mapid"></div>
+
+        <div id ="games-buttons" class="nav nav-pills justify-content-left">
+         <button  id = "basketball-btn" class="nav-item btn btn-outline-primary edit-margin">Basketball</button>
+         <button  id = "football-btn" class="nav-item btn btn-outline-primary edit-margin">Football</button>
+         <button  id = "soccer-btn" class="nav-item btn btn-outline-primary edit-margin">Soccer</button>
+         <button  id = "pingpong-btn" class="nav-item btn btn-outline-primary edit-margin">Ping Pong</button>
+         <button  id = "all-btn" class="nav-item btn btn-outline-primary edit-margin">All Games</button>
+       </div>
         <div id = "games-list"></div>
       </div>
     </div>
@@ -287,8 +300,6 @@ function postCourt(gameId){
   function postGame(event) {
     event.preventDefault();
 
-    console.log("userId:", userId)
-    console.log("latlng: ", latitudeLongitude)
 
     let gameName = document.querySelector("#game-name").value
     let sport = document.querySelector("#sport-type").value
@@ -388,7 +399,6 @@ function postCourt(gameId){
 //------------------------ Filter Games --------------------------
 
   function filterOutMyGames(games) {
-    console.log(games);
     return games.filter((game) => {
       return !game.players.find(player => player.id === userId)
     })
@@ -420,7 +430,7 @@ function postCourt(gameId){
   function joinGameHandler(e) {
     if (e.target.innerText === "Join") {
       increasePlayerCountInFrontEnd(e)
-      removeGameFromList(e)
+      removeGameFromMainList(e)
       addGameToMyList(e)
     }
   }
@@ -432,7 +442,8 @@ function postCourt(gameId){
   }
 
 // -------------------- REMOVE A GAME FROM MY LIST --------------
-  function removeGameFromList(e){
+  function removeGameFromMainList(e){
+    console.log("We are her", e.target)
       e.target.parentNode.remove()
   }
 
@@ -445,17 +456,15 @@ function postCourt(gameId){
 
   function leaveGameHandler(e){
     if (e.target.innerText === "Leave Game"){
-      console.log("leaveclicked")
       removeGameFromList(e)
       let gameId = parseInt(e.target.parentNode.dataset.mygameId)
-      console.log(gameId)
       // removeMyGameFromBackend(gameId)
     }
   }
 
   function removeGameFromList(e){
-    e.target.parentNode.remove()
-    let gameId = parseInt(e.target.parentNode.dataset.mygameId)
+    e.target.parentNode.parentNode.parentNode.remove()
+    let gameId = parseInt(e.target.parentNode.parentNode.parentNode.dataset.mygameId)
     fetch(COURTS_URL)
     .then(res => res.json())
     .then(courts => findCourtByGameAndUser(courts, gameId))
@@ -464,7 +473,6 @@ function postCourt(gameId){
 
 
   function removeMyGameFromBackend(foundCourt){
-    console.log(foundCourt)
 
     let config =
     {
@@ -481,8 +489,6 @@ function postCourt(gameId){
 
 
   function findCourtByGameAndUser(courts, gameId) {
-    // console.log("we are here")
-    // console.log(typeof userId)
     // debugger;
     return courts.find((court) => {
       return (court.game.id === gameId && court.user.id === userId)
@@ -525,14 +531,12 @@ function postCourt(gameId){
     fetch(`https://api.opencagedata.com/geocode/v1/json?key=52d0a97508b24a06a1477a4b7280fb10&q=${lat}%2C${lng}&pretty=1&no_annotations=1`)
     .then(resp => resp.json())
     .then(data => {
-      console.log(locationInput.value)
       locationInput.value = data.results["0"].formatted
     })
   }
 
   // ----- Show Markers on Map -------------
   function addGameToMap(game){
-    console.log(game.game_type)
     let icon;
     if (game.game_type.toLowerCase() === "soccer"){
       icon = soccerIcon
