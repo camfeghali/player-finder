@@ -448,7 +448,7 @@ function postCourt(gameId){
               <p class="card-text"> ${game.start_time} </p>
               <p class="card-text"> ${game.end_time} </p>
               <p class="card-text"> ${game.capacity} </p>
-              <button class = "btn btn-outline-primary" data-join-game-btn-id = ${game.id}> Join Game </button>
+              <button class = "btn btn-outline-primary" > Join Game </button>
           </div>
       </div>
       `
@@ -460,16 +460,16 @@ function postCourt(gameId){
   function joinGameHandler(e) {
     if (e.target.innerText === "Join Game") {
       increasePlayerCountInFrontEnd(e)
-      removeGameFromMainList(e)
       addGameToMyList(e)
+      removeGameFromMainList(e)
     }
   }
 
   // ---------------- AFTER JOINING JOINING A GAME, Add IT TO MY LIST -----------------
   function addGameToMyList(e){
-    console.log("join clicked", e.target.dataset.joinGameBtnId)
+    console.log("join clicked", e.target.parentNode.parentNode.dataset.gameId)
     // debugger
-    let gameId = parseInt(e.target.dataset.joinGameBtnId)
+    let gameId = parseInt(e.target.parentNode.parentNode.dataset.gameId)
     postCourt(gameId)
   }
 
