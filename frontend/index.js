@@ -137,6 +137,7 @@ let pingPongIcon = L.icon({
               <div class="card-game-name-box">
                 <h2 class="card-title">${game.name}</h2>
               </div>
+            </div>
               <div class="wrap">
                 <div class="box">
                   <img src=${iconDisplayer(game.game_type)} height="32" width="32">
@@ -162,10 +163,12 @@ let pingPongIcon = L.icon({
     `
     <div class="row">
       <div class="col" style="margin-left:10px; width:20em">
-        <div id="user-games"></div>
+        <div id="user-games">
+        </div>
       </div>
       <div class="col" style="width:20em">
-        <div id="mapid"></div>
+        <div id="mapid">
+        </div>
 
         <div id ="games-buttons" class="nav nav-pills justify-content-left">
          <button  id = "basketball-btn" class="nav-item btn btn-outline-primary edit-margin">Basketball</button>
@@ -174,7 +177,8 @@ let pingPongIcon = L.icon({
          <button  id = "pingpong-btn" class="nav-item btn btn-outline-primary edit-margin">Ping Pong</button>
          <button  id = "all-btn" class="nav-item btn btn-outline-primary edit-margin">All Games</button>
        </div>
-        <div id = "games-list"></div>
+        <div id = "games-list">
+        </div>
       </div>
     </div>
     `
@@ -283,14 +287,24 @@ function postCourt(gameId){
   function appendCourtToMyList(court) {
     let ul = document.querySelector('#user-games')
     ul.innerHTML += `
-
-    <div data-mygame-id=${court.game.id}>
-    <p> Game: ${court.game.name} </p>
-    <p> Address: ${court.game.address} </p>
-    <p> Game Day: ${court.game.game_day.split("T")[0]} </p>
-    <p> Start Time: ${court.game.start_time.split("T")[1]} </p>
-    <p> End Time: ${court.game.end_time.split("T")[1]} </p>
-    <button> Leave Game </button>
+    <div class="card border-primary mb-3" data-mygame-id=${court.game.id}>
+        <div class="card-body">
+          <div class="wrap">
+            <div class="card-game-name-box">
+              <h2 class="card-title">${court.game.name}</h2>
+            </div>
+          </div>
+            <div class="wrap">
+              <div class="box">
+                <img src=${iconDisplayer(court.game.game_type)} height="32" width="32">
+              </div>
+            </div> <br>
+            <p class="card-text"> Address: ${court.game.address} </p>
+            <p class="card-text"> Game Day: ${court.game.game_day.split("T")[0]} </p>
+            <p class="card-text"> Start Time: ${court.game.start_time.split("T")[1]} </p>
+            <p class="card-text"> End Time: ${court.game.end_time.split("T")[1]} </p>
+            <button class = " btn btn-outline-primary"> Leave Game </button>
+        </div>
     </div>
     `
     // addGameToMap(court.game)
@@ -410,16 +424,32 @@ function postCourt(gameId){
     gameList.innerHTML = ''
     games.forEach((game) => {
       gameList.innerHTML +=
-      `<div data-game-id = ${game.id}>
-        <p> ${game.name}</p>
-        <p> ${game.game_type} </p>
-        <p> ${game.address} </p>
-        <p> ${game.game_day} </p>
-        <p> ${game.start_time} </p>
-        <p> ${game.end_time} </p>
-        <p> ${game.capacity} </p>
-        <p class="game-player-count"> ${game.players.length} </p>
-        <button >Join</button>
+
+      // <div class="card border-primary mb-3" data-game-id = ${game.id}>
+      //
+      //     <p> ${game.name}</p>
+      //     <p> ${game.game_type} </p>
+      //     <p> ${game.address} </p>
+      //     <p> ${game.game_day} </p>
+      //     <p> ${game.start_time} </p>
+      //     <p> ${game.end_time} </p>
+      //     <p> ${game.capacity} </p>
+      //     <p class="game-player-count"> ${game.players.length} </p>
+      //     <button >Join Game</button>
+      //
+      // </div>
+      `
+      <div class="card border-danger mb-3" data-game-id = ${game.id}>
+          <div class="card-body">
+              <h4 class="card-title">${game.name}</h4>
+              <img src=${iconDisplayer(game.game_type)} height="32" width="32">
+              <p class="card-text"> ${game.address} </p>
+              <p class="card-text"> ${game.game_day} </p>
+              <p class="card-text"> ${game.start_time} </p>
+              <p class="card-text"> ${game.end_time} </p>
+              <p class="card-text"> ${game.capacity} </p>
+              <button class = "btn btn-outline-primary" data-join-game-btn-id = ${game.id}> Join Game </button>
+          </div>
       </div>
       `
     })
@@ -428,7 +458,7 @@ function postCourt(gameId){
 
 // --------------------------- HANDLE JOINING A GAME -----------------
   function joinGameHandler(e) {
-    if (e.target.innerText === "Join") {
+    if (e.target.innerText === "Join Game") {
       increasePlayerCountInFrontEnd(e)
       removeGameFromMainList(e)
       addGameToMyList(e)
@@ -437,14 +467,15 @@ function postCourt(gameId){
 
   // ---------------- AFTER JOINING JOINING A GAME, Add IT TO MY LIST -----------------
   function addGameToMyList(e){
-    let gameId = parseInt(e.target.parentNode.dataset.gameId)
+    console.log("join clicked", e.target.dataset.joinGameBtnId)
+    // debugger
+    let gameId = parseInt(e.target.dataset.joinGameBtnId)
     postCourt(gameId)
   }
 
 // -------------------- REMOVE A GAME FROM MY LIST --------------
   function removeGameFromMainList(e){
-    console.log("We are her", e.target)
-      e.target.parentNode.remove()
+      e.target.parentNode.parentNode.remove()
   }
 
 // --------------- Increase player Count in Front End ---------------
@@ -463,8 +494,8 @@ function postCourt(gameId){
   }
 
   function removeGameFromList(e){
-    e.target.parentNode.parentNode.parentNode.remove()
-    let gameId = parseInt(e.target.parentNode.parentNode.parentNode.dataset.mygameId)
+    e.target.parentNode.parentNode.remove()
+    let gameId = parseInt(e.target.parentNode.parentNode.dataset.mygameId)
     fetch(COURTS_URL)
     .then(res => res.json())
     .then(courts => findCourtByGameAndUser(courts, gameId))
