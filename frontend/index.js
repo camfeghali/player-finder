@@ -13,8 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----------------- Sports ICONS -------------------
   let basketBallIcon = L.icon({
-    iconUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSH9EzS71-M6-1Di9xtr2biBGBihiDx_RS1yPtqpN0d-o4DKHB8',
-    // shadowUrl: 'leaf-shadow.png',
+    iconUrl: 'media/basketball.jpeg',
 
     iconSize:     [38, 38], // size of the icon
     shadowSize:   [50, 64], // size of the shadow
@@ -23,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
 let soccerIcon = L.icon({
-  iconUrl: 'https://www.teenmissions.org/wp-content/uploads/2016/05/1407858226.png',
+  iconUrl: 'media/soccer.png',
   // shadowUrl: 'leaf-shadow.png',
 
   iconSize:     [38, 38], // size of the icon
@@ -128,6 +127,23 @@ let pingPongIcon = L.icon({
         <p> End Time: ${game.end_time.split("T")[1]} </p>
         <button> Leave Game </button>
       </div>
+
+
+
+      <div class="card border-primary mb-3">
+          <div class="card-body">
+            <div class="wrap">
+              <div class="card-game-name-box">
+                <h2 class="card-title">${game.name}</h2>
+              </div>
+              <div class="wrap">
+                <div class="box">
+                  <img src=${iconDisplayer(game.game_type)} height="32" width="32">
+                </div>
+            </div>
+              <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod</p>
+          </div>
+      </div>
       `
       console.log(game)
       // addGameToMap(game)
@@ -139,25 +155,15 @@ let pingPongIcon = L.icon({
   function createBody() {
     bodyDiv.innerHTML +=
     `
-      <div style="width: 30%; float:left">
-        <div id="user-games">
-
-        </div>
+    <div class="row">
+      <div class="col" style="margin-left:10px; width:20em">
+        <div id="user-games"></div>
       </div>
-      <div style="width: 70%; float:right">
+      <div class="col" style="width:20em">
         <div id="mapid"></div>
-        <div class="form-container">
-        </div >
-        <div id ="games-buttons">
-          <button  id = "basketball-btn" >Basketball</button>
-          <button  id = "football-btn" >Football</button>
-          <button  id = "soccer-btn" >Soccer</button>
-          <button  id = "pingpong-btn" >Ping Pong</button>
-          <button  id = "all-btn" >All Games</button>
-        </div>
-        <div id = "games-list">
-        </div>
+        <div id = "games-list"></div>
       </div>
+    </div>
     `
   }
 
@@ -558,6 +564,18 @@ function postCourt(gameId){
     `
     return gameInfoDiv
 
+  }
+
+  function iconDisplayer(gameType){
+    if (gameType === "basketball"){
+      return "media/basketball.jpeg"
+    }else if (gameType === "soccer") {
+      return "media/soccer.png"
+    }else if(gameType === "football"){
+      return "media/football"
+    }else if (true) {
+      return "media/football"
+    }
   }
 
 })
